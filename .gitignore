@@ -1,0 +1,13 @@
+# Virtual environment
+venv/
+
+# Datasets (very large files)
+data/
+*.csv
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Streamlit
+.streamlit/
