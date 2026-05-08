@@ -1,7 +1,10 @@
+from pathlib import Path
+
 import pandas as pd
 
-# Load dataset
-nutrition_df = pd.read_csv("data/nutrition.csv")
+DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "nutrition.csv"
+
+nutrition_df = pd.read_csv(DATA_PATH)
 
 # Normalize column names
 nutrition_df.columns = [c.lower() for c in nutrition_df.columns]
@@ -11,6 +14,15 @@ numeric_cols = ["calories", "protein", "fat", "carbs"]
 
 for col in numeric_cols:
     nutrition_df[col] = pd.to_numeric(nutrition_df[col], errors="coerce").fillna(0)
+
+
+def _ingredient_key(text):
+    words = [
+        word
+        for word in str(text).lower().replace(",", " ").split()
+        if len(word) > 2 and not any(char.isdigit() for char in word)
+    ]
+    return words[-1] if words else ""
 
 
 def analyze_nutrition(recipe_ingredients):
@@ -26,8 +38,9 @@ def analyze_nutrition(recipe_ingredients):
     }
 
     for ing in recipe_ingredients:
-        # Take first meaningful word
-        key = ing.lower().split()[0]
+        key = _ingredient_key(ing)
+        if not key:
+            continue
 
         match = nutrition_df[
             nutrition_df["food"].str.lower().str.contains(key, na=False)

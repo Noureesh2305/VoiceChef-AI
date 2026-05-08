@@ -1,4 +1,3 @@
-from gtts import gTTS
 import io
 import re
 
@@ -6,6 +5,13 @@ def speak(text):
     """
     Convert text to speech and return audio bytes for Streamlit.
     """
+    try:
+        from gtts import gTTS
+    except ModuleNotFoundError as exc:
+        raise RuntimeError(
+            "Text-to-speech needs the gTTS package. Install it with: pip install gTTS"
+        ) from exc
+
     # Clean text (remove unicode / symbols)
     text = re.sub(r"[^\x00-\x7F]+", " ", text)
 
